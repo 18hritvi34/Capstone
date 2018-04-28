@@ -24,6 +24,53 @@ class Title(spgl.Sprite):
 		self.goto(280.0,220.0)
 		
 class Grid():
+	def click(self, x, y, to_color):
+		# Track the from_color and to_color
+		from_color = self.grid[0][0]
+		to_color = to_color
+
+		# Keep track of connected blocks
+		blocks = [(0,0)]
+
+		# Iterate through each block
+		# V2 - Replace from_color with to_color...
+		# ...only if it is touching the same color (up, down, left, right)
+		for y in range(5):
+			for x in range(5):
+			#	Up
+				if y > 0:
+					if self.grid[y-1][x] == from_color and self.grid[y-1][x] == from_color and (y-1,x) in blocks:
+						blocks.append((y,x))
+			
+			#	Down
+				if y < 4:
+					if self.grid[y+1][x] == from_color and (y+1,x) in blocks:
+						blocks.append((y,x)) 
+					
+			# Left
+				if x > 0:
+					if self.grid[y][x] == from_color and (y,x-1) in blocks:
+						blocks.append((y,x))
+	
+			#	Right
+				if x < 4:
+					if self.grid[y][x+1] == from_color and (y,x) in blocks:
+						blocks.append((y,x))
+
+	#	Update the top left block
+		self.grid[0][0] = to_color
+
+		for block in blocks:
+			y = block[0]
+			x = block[1]
+			self.grid[y][x] = to_color 
+			
+		print(self.grid)
+		self.draw_grid()
+
+		
+		
+
 	def __init__(self, squares, rows, columns, x, y):
 		self.rows = rows 
 		self.columns = columns
@@ -32,24 +79,26 @@ class Grid():
 		self.pen.shape("square")
 		self.pen.penup() 
 		
+		self.grid = []
+
+		for row in range(6): 
+			self.grid.append([])
+			for column in range(6):
+				self.grid[row].append(random.choice(colors))
+
+		
+	def draw_grid(self):
 		columns = 6
 		rows = 6
 		squares = 36
-			
-		grid = []
-
-		for row in range(6): 
-			grid.append([])
-			for column in range(6):
-				grid[row].append(random.choice(colors))
-
+		
 		for row in range(6):
 			output = ""
 			for column in range(6):
-				if grid[row][column] == "-":
+				if self.grid[row][column] == "-":
 					output += "-"
 				else:
-					output += grid[row][column]
+					output += self.grid[row][column]
 			print(output)
 
 		for row in range(6):
@@ -58,36 +107,29 @@ class Grid():
 				screen_y = 200 - row * 80
 				self.pen.goto(screen_x, screen_y)
 				#select color
-				if grid[row][column] == "O":
+				if self.grid[row][column] == "O":
 					self.pen.shape("orange.gif")
-				if grid[row][column] == "C":
+				if self.grid[row][column] == "C":
 					self.pen.shape("cream.gif")
-				if grid[row][column] == "T":
+				if self.grid[row][column] == "T":
 					self.pen.shape("turquoise.gif")
-				if grid[row][column] == "B":
+				if self.grid[row][column] == "B":
 					self.pen.shape("blue.gif")
-				if grid[row][column] == "P":
+				if self.grid[row][column] == "P":
 					self.pen.shape("purple.gif")
-				if grid[row][column] == "Y":
+				if self.grid[row][column] == "Y":
 					self.pen.shape("yellow.gif")
-				self.pen.stamp()
-					
-		#def click(self, x, y):
-			#print("Orange Clicked")
-			#grid[row].append("orange.gif")
-
+				self.pen.stamp() 		
 			
-				
-				
-				
+	
 					
 class Orange(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
 		spgl.Sprite.__init__(self, shape, color, x, y)
 		self.shape("orange.gif")
 		self.speed = 0 
-	
-	
+	def click(self, x, y):
+		grid.click(x, y, "O")
 
 class Yellow(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
@@ -96,7 +138,7 @@ class Yellow(spgl.Sprite):
 		self.speed = 0
 		
 	def click(self, x, y):
-		print("Yellow Clicked")
+		grid.click(x, y, "Y")
 		
 class Turquoise(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
@@ -105,7 +147,7 @@ class Turquoise(spgl.Sprite):
 		self.speed = 0
 		
 	def click(self, x, y):
-		print("Turquoise Clicked")
+		grid.click(x, y, "T")
 
 class Blue(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
@@ -114,7 +156,7 @@ class Blue(spgl.Sprite):
 		self.speed = 0
 	
 	def click(self, x, y):
-		print("Blue Clicked")
+		grid.click(x, y, "B")
 
 class Purple(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
@@ -123,7 +165,7 @@ class Purple(spgl.Sprite):
 		self.speed = 0
 	
 	def click(self, x, y):
-		print("Purple Clicked")
+		grid.click(x, y, "P")
 
 class Cream(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
@@ -132,12 +174,20 @@ class Cream(spgl.Sprite):
 		self.speed = 0
 	
 	def click(self, x, y):
-		print("Cream Clicked")
+		grid.click(x, y, "C")
 	
-				 
-			 
-		
-		
+
+
+# class Show_Info(spgl.Sprite):
+# 	def __init__(self, shape, color, x, y):
+# 		spgl.Sprite.__init__(self, shape, color, x, y)
+# 		self.shape("		
+# 		
+# 	
+# 
+# def show_info(self, title, message):
+#         return messagebox.showinfo(title, message)
+
 		
 		 
 # Create Instances 
@@ -150,12 +200,13 @@ blue = Blue("blue.gif", "green", 290, 100)
 cream = Cream("cream.gif", "blue", 370, 100)
 purple = Purple("purple.gif", "pink", 450, 100)
 grid = Grid(36, 6, 6, -300.0,150.0) 
+grid.draw_grid()
+
 
 # Create Sprites
 
 # Create Labels
 
-# Create Buttons
 
 
 # Set Mousepad bindings 
@@ -163,6 +214,5 @@ grid = Grid(36, 6, 6, -300.0,150.0)
 
 while True:
     # Call the game tick method
-    game.tick()
-    
-    #grid.click(0,0)
+	game.tick()
+	
